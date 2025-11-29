@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reyz4You Host — Dashboard</title>
+
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7ie5Q1vCn9IOsBj8+5aVV4kF6d3y6UbbtZ8tX+U1jGzK3q8XzQq2z2FhA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+  body { margin:0; font-family: Arial, sans-serif; background:#0d1117; color:#fff; display:flex; justify-content:center; }
+  .container { width:100%; max-width:480px; display:flex; flex-direction:column; min-height:100vh; padding-bottom:70px; }
+
+  .section { display:none; flex-direction:column; gap:16px; padding:16px; }
+  .section.active { display:flex; }
+
+  /* Profil */
+  .profile-login {
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:13px;
+    padding:20px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+  .profile-login img { width:70px; height:70px; border-radius:50%; border:2px solid #238636; object-fit:cover; }
+  .profile-login .name { font-size:18px; font-weight:bold; display:flex; align-items:center; gap:6px; }
+  .profile-login .verified { width:18px; height:18px; background-color:#1da1f2; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; color:#fff; }
+
+  .profile-banner {
+    background:#238636;
+    border-radius:12px;
+    padding:16px;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .profile-banner .info { display:flex; flex-direction:column; gap:6px; }
+  .profile-banner .info .name { font-size:16px; font-weight:bold; display:flex; align-items:center; gap:6px; }
+  .profile-banner .info .verified { width:16px; height:16px; background-color:#1da1f2; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; color:#fff; }
+  .profile-banner .info .bio { font-size:14px; color:#e0e0e0; }
+  .profile-banner .social-links a {
+    text-decoration:none;
+    color:#fff;
+    background:rgba(0,0,0,0.2);
+    padding:6px 10px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:bold;
+    margin-right:6px;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+  .profile-banner .social-links a:hover { background:rgba(0,0,0,0.4); }
+  .profile-banner .about p { font-size:14px; color:#e0e0e0; line-height:1.5; margin:0; }
+
+  /* Section Titles */
+  .section-title { font-size:18px; font-weight:bold; margin-bottom:10px; text-align:center; }
+
+  /* Video Banner */
+  .video-banner { width:100%; border-radius:12px; overflow:hidden; margin-bottom:12px; }
+  .video-banner video { width:100%; border-radius:12px; }
+
+  /* Payment Cards */
+  .cards-container { display:flex; flex-direction:column; gap:16px; }
+  .card { background:#161b22; border:1px solid #30363d; padding:18px; border-radius:13px; text-align:center; }
+  .title { font-size:18px; font-weight:bold; margin-bottom:10px; }
+  .btn { width:100%; padding:12px; font-size:15px; border:none; border-radius:8px; cursor:pointer; color:#fff; transition:.25s; margin-top:6px; }
+  .btn.show { background:#238636; }
+  .btn.copy { background:#444; }
+  .btn:disabled { opacity:.35; cursor:not-allowed; }
+  .reveal { font-size:22px; font-weight:bold; letter-spacing:.7px; opacity:0; transform:translateY(10px); transition:.25s ease; display:none; margin-bottom:10px; }
+  .reveal.show { display:block; opacity:1; transform:translateY(0); }
+  .qris-img { max-width:150px; margin:10px auto; display:block; border-radius:12px; }
+
+  /* Shop */
+  .shop-item { background:#161b22; padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+  .shop-item img { width:50px; height:50px; border-radius:8px; }
+  .shop-item .info { display:flex; flex-direction:column; gap:4px; flex:1; }
+  .shop-item .info .name { font-weight:bold; }
+  .shop-item .info .price { font-size:14px; color:#a8b3c1; }
+  .shop-item .info .detail { font-size:12px; color:#c0c0c0; }
+  .shop-item button { background:#238636; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; color:#fff; transition:0.2s; margin-left:12px; flex-shrink:0; }
+  .shop-item button:hover { background:#2ea043; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#238636; padding:10px 18px; border-radius:8px; display:none; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#161b22;
+    border-top:1px solid #30363d;
+    display:flex;
+    justify-content:space-around;
+    padding:6px 0;
+  }
+  .bottom-nav button {
+    flex:1;
+    border:none;
+    background:none;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    font-size:14px;
+    cursor:pointer;
+    padding:8px 0;
+    transition:0.25s;
+  }
+  .bottom-nav button.active {
+    background:#238636;
+    border-radius:10px 10px 0 0;
+  }
+  .bottom-nav button i { font-size:20px; }
+  .bottom-nav button span { font-size:12px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Profil Section -->
+  <div class="section active" id="profil">
+    <div class="profile-login">
+      <img src="https://files.catbox.moe/5wdm9y.jpg" alt="Avatar">
+      <div class="name">Reyz4You Host<div class="verified">&#10003;</div></div>
+    </div>
+
+    <div class="profile-banner">
+      <div class="info">
+        <div class="name">Reyz4You Host<div class="verified">&#10003;</div></div>
+        <div class="bio">Solusi Hosting Terpercaya</div>
+        <div class="social-links">
+          <a href="https://wa.me/6281260512743" target="_blank"><i class="fa-brands fa-whatsapp"></i> Whatsapp</a>
+          <a href="https://t.me/Reyz4Youu" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram</a>
+          <a href="https://instagram.com/rey_how_are_you" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a>
+        </div>
+      </div>
+      <div class="about">
+        <p>
+          Reyz4You Host menyediakan layanan hosting, domain, Jasa, panel Ptrodacktyl,dan solusi web profesional
+          dengan harga terjangkau dan support cepat 24/7.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Section -->
+  <div class="section" id="payment">
+    <div class="section-title">Payment Metode</div>
+    <div class="video-banner">
+      <video autoplay muted loop>
+        <source src="https://files.catbox.moe/bdh66f.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="cards-container" id="cards-container"></div>
+  </div>
+
+  <!-- Shop Section -->
+  <div class="section" id="shop">
+    <div class="section-title">Shop</div>
+    <div class="video-banner">
+      <video autoplay muted loop>
+        <source src="https://files.catbox.moe/nomfwn.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div id="shop-items"></div>
+  </div>
+
+</div>
+
+<!-- Bottom nav -->
+<div class="bottom-nav">
+  <button class="active" data-tab="profil"><i class="fa-solid fa-user"></i><span>Profil</span></button>
+  <button data-tab="payment"><i class="fa-solid fa-credit-card"></i><span>Payment</span></button>
+  <button data-tab="shop"><i class="fa-solid fa-bag-shopping"></i><span>Shop</span></button>
+</div>
+
+<div id="toast" class="toast">Nomor Disalin!</div>
+
+<script>
+  // Bottom nav tab
+  const navButtons = document.querySelectorAll(".bottom-nav button");
+  const sections = document.querySelectorAll(".section");
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      navButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const target = btn.dataset.tab;
+      sections.forEach(sec => sec.classList.remove("active"));
+      document.getElementById(target).classList.add("active");
+    });
+  });
+
+  // Payment cards
+  const payments = [
+    {name: "DANA", number: "082181101556"},
+    {name: "GoPay", number: "087796862524"},
+    {name: "OVO", number: "087759094416"},
+    {name: "SeaBank", number: "901430530028"},
+    {name: "QRIS", qris: "https://files.catbox.moe/5wdm9y.jpg", link: "https://files.catbox.moe/5wdm9y.jpg"}
+  ];
+  const cardsContainer = document.getElementById("cards-container");
+  payments.forEach(pay => {
+    const card = document.createElement("div");
+    card.className = "card";
+    if(pay.qris){
+      card.dataset.qris = pay.qris; card.dataset.link = pay.link;
+      card.innerHTML = `<div class="title">${pay.name}</div><div class="reveal"></div><button class="btn show">Tampilkan QRIS</button><button class="btn copy" disabled>Salin Link</button>`;
+    } else {
+      card.dataset.number = pay.number;
+      card.innerHTML = `<div class="title">${pay.name}</div><div class="reveal"></div><button class="btn show">Tampilkan Nomor</button><button class="btn copy" disabled>Salin</button>`;
+    }
+    cardsContainer.appendChild(card);
+  });
+
+  const toast = document.getElementById("toast");
+  const showToast = () => { toast.style.display="block"; setTimeout(()=>toast.style.display="none",1500); }
+
+  let activeCard = null;
+  cardsContainer.addEventListener("click", async (e)=>{
+    const card = e.target.closest(".card"); if(!card) return;
+    const reveal = card.querySelector(".reveal");
+    const showBtn = card.querySelector(".show");
+    const copyBtn = card.querySelector(".copy");
+    if(card.dataset.qris){
+      const qris = card.dataset.qris; const link = card.dataset.link;
+      if(e.target.classList.contains("show")){
+        if(reveal.classList.contains("show")){ reveal.innerHTML=""; reveal.classList.remove("show"); copyBtn.disabled=true; activeCard=null; return; }
+        if(activeCard && activeCard!==card){ const prevReveal = activeCard.querySelector(".reveal"); const prevCopyBtn = activeCard.querySelector(".copy"); prevReveal.innerHTML=""; prevReveal.classList.remove("show"); prevCopyBtn.disabled=true; }
+        reveal.innerHTML=`<a href="${link}" target="_blank"><img src="${qris}" class="qris-img"></a>`; reveal.classList.add("show"); copyBtn.disabled=false; activeCard=card;
+      }
+      if(e.target.classList.contains("copy")){ await navigator.clipboard.writeText(link); showToast(); }
+    } else {
+      const number = card.dataset.number;
+      if(e.target.classList.contains("show")){
+        if(reveal.classList.contains("show")){ reveal.textContent=""; reveal.classList.remove("show"); copyBtn.disabled=true; activeCard=null; return; }
+        if(activeCard && activeCard!==card){ const prevReveal = activeCard.querySelector(".reveal"); const prevCopyBtn = activeCard.querySelector(".copy"); prevReveal.textContent=""; prevReveal.classList.remove("show"); prevCopyBtn.disabled=true; }
+        reveal.textContent=number; reveal.classList.add("show"); copyBtn.disabled=false; activeCard=card;
+      }
+      if(e.target.classList.contains("copy")){ await navigator.clipboard.writeText(number); showToast(); }
+    }
+  });
+
+  // Shop items
+  const shopItems = [
+    {name:"Murweb", price:"Rp15.000", detail:"Dapat Template Html keren", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Domain xyzid.store", price:"Rp25.000", detail:"Registrasi domain xyzid.store dengan WHOIS privacy", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Jasa Buat Web", price:"Rp5.000", detail:"Buat Web Bucin, Payment,Dan portofolio", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Reseller Panel", price:"Rp12.000", detail:"Bisa Jual Panel Dan Balmod Kalo Usaha", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Jasa Install Panel", price:"Rp15.000", detail:"Bebas Req Region Dan Subdo", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Script Add database pake github", price:"Rp10.000", detail:"Bisa Add Nomor / Token Bot", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Tools Anti Bypass Simple", price:"Rp5.000", detail:"Keamanan Script Bug / Md", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Buat Script Bug", price:"Rp60.000", detail:"Free Update Sampai V3 Berfunct Work", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Jasa Deploy", price:"Rp7.000", detail:"Menggunakan Domain vercel.app Dan xyzid.store,(Bebas Pilih Domain)", img:"https://files.catbox.moe/5wdm9y.jpg"},
+    {name:"Tangan Kanan", price:"Rp50.000", detail:"Optimasi Dapat Semua Ajaran Dari Gw", img:"https://files.catbox.moe/5wdm9y.jpg"}
+  ];
+
+  const shopContainer = document.getElementById("shop-items");
+  shopItems.forEach(item=>{
+    const div = document.createElement("div");
+    div.className = "shop-item";
+    div.innerHTML = `
+      <img src="${item.img}" alt="${item.name}">
+      <div class="info">
+        <div class="name">${item.name}</div>
+        <div class="price">${item.price}</div>
+        <div class="detail">${item.detail}</div>
+      </div>
+      <button class="buy-btn" data-item="${item.name}" data-price="${item.price}">Beli</button>
+    `;
+    shopContainer.appendChild(div);
+  });
+
+  // Buy button WA
+  const buyButtons = document.querySelectorAll(".buy-btn");
+  buyButtons.forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const itemName = btn.dataset.item;
+      const price = btn.dataset.price;
+      const waNumber = "6281260512743"; // Ganti pake no lu
+      const message = encodeURIComponent(`Halo, saya ingin membeli: ${itemName} seharga ${price}`);
+      window.open(`https://wa.me/${waNumber}?text=${message}`,"_blank");
+    });
+  });
+</script>
+</body>
+</html>
